@@ -1,99 +1,178 @@
-# Figural
+# Figural - Draw & Voice to Code
 
-An iOS app that captures hand-drawn content through Meta Ray-Ban glasses and generates AI-powered output from the drawings.
+A browser-based app that transforms hand-drawn UI layouts and voice descriptions into working web applications.
 
 ## Features
 
-- **Connect to Meta Ray-Ban Glasses** - Seamless integration with Meta Wearables Device Access Toolkit
-- **Live Camera Preview** - Stream video from your glasses in real-time
-- **Capture Drawings** - Take photos of hand-drawn sketches through the glasses
-- **AI-Powered Generation** - Transform drawings into:
-  - SwiftUI code from UI mockups
-  - React components from wireframes
-  - Mermaid chart syntax from diagrams
-  - Design feedback and suggestions
-  - Swift code from flowcharts
+### Drawing Canvas
+- **Select & Move** - Click and drag elements to reposition them (V key)
+- **Freehand drawing** - Sketch freely with pen tool
+- **Basic shapes** - Rectangle, circle, and line tools
+- **Text tool** - Add text labels to your designs
+- **Image tool** - Add images via upload, drag & drop, or paste (Ctrl+V)
+- **Eraser** - Remove unwanted strokes
+- **Undo/Redo** - Full history support
+- **Timestamped elements** - All drawing events are captured with timestamps
 
-## Requirements
+### Vision-Powered Generation
+- **Canvas screenshot** - The entire canvas is captured and sent to Claude's vision API
+- **Visual interpretation** - AI sees your actual drawing, not just coordinates
+- **Image context** - Uploaded images are included in the visual analysis
 
-- iOS 16.0+
-- Xcode 15.0+
-- Meta Ray-Ban glasses
-- Meta AI app installed on your device
-- Anthropic API key
+### Voice Recording
+- **MediaRecorder API** - Records audio while you draw
+- **NVIDIA Parakeet ASR** - Accurate transcription using NVIDIA's speech recognition model
+- **Web Speech API** - Optional real-time preview (fallback)
+- **Synchronized input** - Drawing and voice are timestamp-aligned
 
-## Setup
+### Text Prompt Input
+- **Alternative to voice** - Type descriptions instead of recording
+- **Combinable with voice** - Use both for richer context
+- **Auto-save** - Persists with your session
+- **Quick generate** - Press Enter to generate immediately
 
-### 1. Clone and Open Project
+### AI App Generation
+- Sends drawing structure + voice transcript to AI
+- Interprets rough layouts to create clean code
+- Generates:
+  - `index.html` - Semantic HTML5
+  - `styles.css` - Responsive CSS
+  - `script.js` - Vanilla JavaScript interactions
 
+### Preview Mode
+- Live preview in iframe
+- Edit code directly
+- Download as separate files
+- Regenerate with one click
+
+## How to Run
+
+**No build step required!** Simply open `index.html` in a modern browser.
+
+### Option 1: Direct file open
+Double-click `index.html` or drag it into your browser.
+
+### Option 2: Local server (recommended for full features)
 ```bash
-cd Figural
-open Package.swift
+# Using Python
+python -m http.server 8000
+
+# Using Node.js
+npx serve .
+
+# Using PHP
+php -S localhost:8000
 ```
 
-Or create a new Xcode project and add the Swift package dependency.
-
-### 2. Add Meta Wearables SDK
-
-Add the Swift Package dependency:
-- URL: `https://github.com/facebook/meta-wearables-dat-ios`
-- Version: 0.4.0+
-
-### 3. Configure API Key
-
-Open `Figural/Constants.swift` and add your Anthropic API key:
-
-```swift
-static let anthropicAPIKey: String = "your-api-key-here"
-```
-
-Get your API key from [console.anthropic.com](https://console.anthropic.com)
-
-### 4. Info.plist Configuration
-
-The `Info.plist` is pre-configured with all required keys:
-- Custom URL scheme (`sketchai://`) for Meta AI callbacks
-- Bluetooth and external accessory background modes
-- Meta Wearables DAT configuration
+Then open `http://localhost:8000` in your browser.
 
 ## Usage
 
-1. **Connect Glasses** - Open the app and tap "Connect Glasses" to register with Meta AI
-2. **Grant Permissions** - Allow camera access when prompted
-3. **Start Stream** - Tap "Start" to begin streaming from your glasses
-4. **Frame Your Drawing** - Position your hand-drawn sketch in view
-5. **Select Mode** - Choose the type of output you want (UI Mockup, Wireframe, etc.)
-6. **Capture** - Tap the Capture button to photograph your drawing
-7. **View Results** - The AI will analyze your drawing and generate output
+1. **Draw your UI** - Use the toolbar to sketch rectangles, shapes, and add text
+2. **Describe it** - Either:
+   - **Record your voice** - Click "Record Voice" and speak your description
+   - **Type a prompt** - Enter text in the prompt field (or use both!)
+3. **Generate** - Click "Generate App" (or press Enter in the text field)
+4. **Preview & Edit** - View the result, edit code if needed, download files
 
-## Architecture
+## Keyboard Shortcuts
 
-The app follows MVVM architecture:
+| Key | Action |
+|-----|--------|
+| V | Select & Move tool |
+| P | Pen tool |
+| L | Line tool |
+| R | Rectangle tool |
+| C | Circle tool |
+| T | Text tool |
+| E | Eraser |
+| I | Add image |
+| Delete/Backspace | Delete selected element |
+| Ctrl+Z | Undo |
+| Ctrl+Y | Redo |
+| Ctrl+V | Paste image from clipboard |
+| Escape | Close dialogs / Deselect |
 
-- **GlassesManager** - Handles device registration, permissions, and connection state
-- **CaptureViewModel** - Manages camera streaming, photo capture, and AI generation
-- **Views** - SwiftUI views for onboarding, permissions, and main functionality
+## API Configuration
 
-## Generation Modes
+### Speech Recognition (NVIDIA Parakeet)
 
-| Mode | Input | Output |
-|------|-------|--------|
-| UI Mockup | Hand-drawn UI sketch | SwiftUI code + suggestions |
-| Wireframe | Wireframe drawing | React + Tailwind components |
-| Diagram | Any diagram | Mermaid chart syntax |
-| Design Feedback | Sketch | Professional design critique |
-| Flowchart | Flowchart drawing | Pseudocode + Swift implementation |
+The app uses NVIDIA Parakeet for accurate speech-to-text transcription. The API key is configured in `app.js`:
 
-## Developer Mode
+```javascript
+const CONFIG = {
+  // NVIDIA Parakeet ASR
+  NVIDIA_API_KEY: 'your-nvidia-api-key',
+  NVIDIA_ASR_URL: 'https://integrate.api.nvidia.com/v1/audio/transcriptions',
+  NVIDIA_ASR_MODEL: 'nvidia/parakeet-ctc-1.1b-asr',
+  // ...
+};
+```
 
-The app is configured for developer mode (`MetaAppID = "0"`). For production deployment, obtain an App ID from the [Wearables Developer Center](https://wearables.developer.meta.com).
+Get your NVIDIA API key from [build.nvidia.com](https://build.nvidia.com)
 
-## Troubleshooting
+### AI Code Generation (Anthropic Claude)
 
-- **Registration fails**: Ensure Meta AI app is installed and you have internet connectivity
-- **Stream won't start**: Check that glasses are connected and camera permission is granted
-- **No preview**: Make sure glasses are being worn (wear detection may pause the stream)
-- **AI generation fails**: Verify your API key is correctly configured in `Constants.swift`
+To use real AI generation instead of mock templates, add your Anthropic API key:
+
+```javascript
+const CONFIG = {
+  AI_API_KEY: 'your-anthropic-api-key',
+  AI_API_URL: 'https://api.anthropic.com/v1/messages',
+  AI_MODEL: 'claude-sonnet-4-20250514',
+  // ...
+};
+```
+
+### Supported AI Providers
+
+The code is structured to easily swap AI providers:
+
+- **NVIDIA Parakeet** - Speech recognition (ASR)
+- **Anthropic Claude** (default) - Code generation
+- **OpenAI GPT-4** - Change endpoint and headers
+- **NVIDIA Nemotron** - Change to NIM endpoint for code generation
+
+## Browser Compatibility
+
+| Feature | Chrome | Firefox | Safari | Edge |
+|---------|--------|---------|--------|------|
+| Canvas Drawing | ✅ | ✅ | ✅ | ✅ |
+| MediaRecorder | ✅ | ✅ | ✅ | ✅ |
+| Speech Recognition | ✅ | ❌ | ✅ | ✅ |
+| localStorage | ✅ | ✅ | ✅ | ✅ |
+
+> Note: Speech Recognition uses the Web Speech API which has limited Firefox support. Audio recording still works.
+
+## Project Structure
+
+```
+web/
+├── index.html      # Main HTML structure
+├── styles.css      # All CSS styles
+├── app.js          # Application logic
+└── README.md       # This file
+```
+
+## Mock Generation
+
+Without an API key, the app uses intelligent mock generation that detects:
+- **Forms** - From keywords like "login", "signup", "form"
+- **Cards/Products** - From multiple rectangles or "product", "card" keywords
+- **Dashboards** - From "dashboard", "chart" keywords
+- **Generic landing page** - Default fallback
+
+Keywords are detected from both voice transcripts and text prompts.
+
+## Data Persistence
+
+Sessions are automatically saved to `localStorage`:
+- Drawing elements
+- Voice transcripts
+- Text prompt input
+- Timestamps
+
+Clear browser data to reset.
 
 ## License
 

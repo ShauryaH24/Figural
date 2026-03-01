@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120">
+  <!-- Elegant calligraphic italic "f" for Figural -->
+  <path d="M58 5 
+           C48 5, 42 12, 40 22
+           C38 32, 38 42, 38 52
+           L38 55
+           L38 95
+           C38 105, 34 112, 26 115
+           L22 117" 
+        stroke="#1a1a1a" 
+        stroke-width="7" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"/>
+  <!-- Curved top of f -->
+  <path d="M58 5 C68 5, 72 12, 70 20" 
+        stroke="#1a1a1a" 
+        stroke-width="7" 
+        stroke-linecap="round"
+        fill="none"/>
+  <!-- Horizontal crossbar -->
+  <line x1="25" y1="55" x2="60" y2="55" 
+        stroke="#1a1a1a" 
+        stroke-width="6" 
+        stroke-linecap="round"/>
+  <!-- Red dot at bottom -->
+  <circle cx="22" cy="117" r="9" fill="#EF4444"/>
+</svg>
